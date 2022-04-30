@@ -61,7 +61,7 @@ export default function CardInfoForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} ref={formRef}>
+    <form id="form" onSubmit={handleSubmit}>
       <CardNumber
         cardNumbers={cardNumbers}
         onChange={onChangeCardNumber}

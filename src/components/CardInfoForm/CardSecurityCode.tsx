@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 
 import CVC from "../../assets/cvcImage.png";
 import Input from "../common/Input";
@@ -11,21 +11,31 @@ interface CardSecurityProps {
   isValid: boolean;
 }
 
-export default function CardSecurityCode({ securityCode, onChange, isValid }: CardSecurityProps) {
-  return (
-    <InputContainer title="보안 코드(CVC/CVV)" isValid={isValid}>
-      <div className="input-box w-25">
-        <Input
-          type="password"
-          value={securityCode || ""}
-          onChange={onChange}
-          maxLength={3}
-          name="securityCode"
-        />
-        <UserGuide>
-          <img width="160px" src={CVC} alt="cvc" />
-        </UserGuide>
-      </div>
-    </InputContainer>
-  );
-}
+const CardSecurityCode = forwardRef(
+  (
+    { securityCode, onChange, isValid }: CardSecurityProps,
+    inputsRef: React.MutableRefObject<NodeListOf<HTMLInputElement>>
+  ) => {
+    return (
+      <InputContainer title="보안 코드(CVC/CVV)" isValid={isValid}>
+        <div className="input-box w-25">
+          <Input
+            type="password"
+            value={securityCode || ""}
+            onChange={onChange}
+            maxLength={3}
+            name="securityCode"
+            ref={inputsRef}
+          />
+          <UserGuide>
+            <img width="160px" src={CVC} alt="cvc" />
+          </UserGuide>
+        </div>
+      </InputContainer>
+    );
+  }
+);
+
+CardSecurityCode.displayName = "CardSecurityCode";
+
+export default CardSecurityCode;

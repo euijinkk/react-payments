@@ -1,4 +1,4 @@
-import React, { InputHTMLAttributes } from "react";
+import React, { InputHTMLAttributes, useEffect, useRef } from "react";
 
 const sizeTag = {
   tiny: "w-15",
@@ -22,9 +22,30 @@ interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size" 
 }
 
 export default function Input({ size, maxLength, onChange, classes, align, ...props }: InputProps) {
+  const arrayInputsRef = useRef<HTMLInputElement[]>(null);
+
+  useEffect(() => {
+    arrayInputsRef.current = Array.from(document.querySelector("#form").querySelectorAll("input"));
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value.length > maxLength) return;
+    const inputLength = e.target.value.length;
+
+    if (inputLength > maxLength) return;
+
+    const inputIndex = arrayInputsRef.current.findIndex(element => element === e.target);
+
+    if (inputLength === maxLength) focusOnNextInput(inputIndex);
+    if (inputLength === 0) focusOnPrevInput(inputIndex);
     onChange?.(e);
+  };
+
+  const focusOnNextInput = (index: number) => {
+    arrayInputsRef.current[index + 1].focus();
+  };
+
+  const focusOnPrevInput = (index: number) => {
+    arrayInputsRef.current[index - 1].focus();
   };
 
   return (
@@ -35,3 +56,33 @@ export default function Input({ size, maxLength, onChange, classes, align, ...pr
     />
   );
 }
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const inputLength = e.target.value.length;
+
+      if (inputLength > maxLength) return;
+      onChange?.(e);
+      if (inputLength === maxLength) {
+        focusOnNextInput(e.target);
+      }
+    };
+
+    const focusOnNextInput = (target: HTMLInputElement) => {
+      const inputIndex = arrayInputsRef.current.findIndex(element => element === target);
+
+      arrayInputsRef.current[inputIndex + 1].focus();
+    };
+
+    return (
+      <input
+        className={`input-basic ${classes} ${sizeTag[size]} ${alignTag[align]}`}
+        onChange={handleChange}
+        {...props}
+      />
+    );
+  }
+);
+
+Input.displayName = "Input";
+
+export default Input;

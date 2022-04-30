@@ -56,11 +56,7 @@ export default function CardInfoForm({
   };
 
   return (
-    <AutoFocusForm
-      onSubmit={handleSubmit}
-      values={cardInfo}
-      focusCondition={INPUTS_FOCUS_CONDITION}
-    >
+    <form id="form" onSubmit={handleSubmit}>
       <CardNumber
         cardNumbers={cardNumbers}
         onChange={onChangeCardNumber}
@@ -84,6 +80,6 @@ export default function CardInfoForm({
       />
       <CardPassword password={password} onChange={onChangePassword} isValid={isPasswordValid} />
       {isNextButtonShown && <button className="submit-button">다음</button>}
-    </AutoFocusForm>
+    </form>
   );
 }

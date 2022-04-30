@@ -1,4 +1,4 @@
-import React, { InputHTMLAttributes } from "react";
+import React, { forwardRef, InputHTMLAttributes, useEffect, useRef } from "react";
 
 const sizeTag = {
   tiny: "w-15",
@@ -21,17 +21,43 @@ interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size" 
   classes?: string;
 }
 
-export default function Input({ size, maxLength, onChange, classes, align, ...props }: InputProps) {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value.length > maxLength) return;
-    onChange?.(e);
-  };
+const Input = forwardRef(
+  (
+    { size, maxLength, onChange, classes, align, ...props }: InputProps,
+    inputsRef: React.MutableRefObject<NodeListOf<HTMLInputElement>>
+  ) => {
+    const arrayInputsRef = useRef<HTMLInputElement[]>(null);
 
-  return (
-    <input
-      className={`input-basic ${classes} ${sizeTag[size]} ${alignTag[align]}`}
-      onChange={handleChange}
-      {...props}
-    />
-  );
-}
+    useEffect(() => {
+      arrayInputsRef.current = Array.from(inputsRef.current);
+    }, [inputsRef]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const inputLength = e.target.value.length;
+
+      if (inputLength > maxLength) return;
+      onChange?.(e);
+      if (inputLength === maxLength) {
+        focusOnNextInput(e.target);
+      }
+    };
+
+    const focusOnNextInput = (target: HTMLInputElement) => {
+      const inputIndex = arrayInputsRef.current.findIndex(element => element === target);
+
+      arrayInputsRef.current[inputIndex + 1].focus();
+    };
+
+    return (
+      <input
+        className={`input-basic ${classes} ${sizeTag[size]} ${alignTag[align]}`}
+        onChange={handleChange}
+        {...props}
+      />
+    );
+  }
+);
+
+Input.displayName = "Input";
+
+export default Input;

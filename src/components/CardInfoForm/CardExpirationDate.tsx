@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 
 import { validateExpirationDateLength } from "../../lib/validation";
 import { ExpirationDate } from "../../types";
@@ -10,42 +10,50 @@ interface CardExpirationDateProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   isValid: boolean;
 }
-export default function CardExpirationDate({
-  expirationDate,
-  onChange,
-  isValid,
-}: CardExpirationDateProps) {
-  const [hasValue, setHasValue] = useState(false);
 
-  useEffect(() => {
-    setHasValue(validateExpirationDateLength(expirationDate));
-  }, [expirationDate]);
+const CardExpirationDate = forwardRef(
+  (
+    { expirationDate, onChange, isValid }: CardExpirationDateProps,
+    inputsRef: React.MutableRefObject<NodeListOf<HTMLInputElement>>
+  ) => {
+    const [hasValue, setHasValue] = useState(false);
 
-  return (
-    <InputContainer title="만료일" isValid={isValid} shouldShowError={hasValue}>
-      <div className="input-box w-50 flex-center">
-        <Input
-          type="text"
-          placeholder="MM"
-          maxLength={2}
-          onChange={onChange}
-          value={expirationDate.month || ""}
-          style={{ paddingLeft: "40px" }}
-          name="expirationDate"
-          data-key="month"
-        />
-        <span className="expiration-date-delimiter">/</span>
-        <Input
-          type="text"
-          placeholder="YY"
-          maxLength={2}
-          onChange={onChange}
-          value={expirationDate.year || ""}
-          style={{ paddingRight: "40px" }}
-          name="expirationDate"
-          data-key="year"
-        />
-      </div>
-    </InputContainer>
-  );
-}
+    useEffect(() => {
+      setHasValue(validateExpirationDateLength(expirationDate));
+    }, [expirationDate]);
+
+    return (
+      <InputContainer title="만료일" isValid={isValid} shouldShowError={hasValue}>
+        <div className="input-box w-50 flex-center">
+          <Input
+            type="text"
+            placeholder="MM"
+            maxLength={2}
+            onChange={onChange}
+            value={expirationDate.month || ""}
+            style={{ paddingLeft: "40px" }}
+            name="expirationDate"
+            data-key="month"
+            ref={inputsRef}
+          />
+          <span className="expiration-date-delimiter">/</span>
+          <Input
+            type="text"
+            placeholder="YY"
+            maxLength={2}
+            onChange={onChange}
+            value={expirationDate.year || ""}
+            style={{ paddingRight: "40px" }}
+            name="expirationDate"
+            data-key="year"
+            ref={inputsRef}
+          />
+        </div>
+      </InputContainer>
+    );
+  }
+);
+
+CardExpirationDate.displayName = "CardExpirationDate";
+
+export default CardExpirationDate;

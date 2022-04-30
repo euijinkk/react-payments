@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { CardInfoValidation } from "../../hooks/useCardInfoValidation";
 import { CardInfo } from "../../types";
-import AutoFocusForm from "../common/AutoFocusForm";
 import CardExpirationDate from "./CardExpirationDate";
 import CardNumber from "./CardNumber";
 import CardPassword from "./CardPassword";
@@ -43,6 +42,12 @@ export default function CardInfoForm({
     isSecurityCodeValid,
     isPasswordValid,
   } = cardInfoValidation;
+  const inputsRef = useRef<NodeListOf<HTMLInputElement>>(null);
+  const formRef = useCallback((node: HTMLFormElement) => {
+    if (node !== null) {
+      inputsRef.current = node.querySelectorAll("input");
+    }
+  }, []);
 
   useEffect(() => {
     setIsNextButtonShown(Object.keys(cardInfoValidation).every(key => cardInfoValidation[key]));
@@ -56,34 +61,39 @@ export default function CardInfoForm({
   };
 
   return (
-    <AutoFocusForm
-      onSubmit={handleSubmit}
-      values={cardInfo}
-      focusCondition={INPUTS_FOCUS_CONDITION}
-    >
+    <form onSubmit={handleSubmit} ref={formRef}>
       <CardNumber
         cardNumbers={cardNumbers}
         onChange={onChangeCardNumber}
         isValid={isCardNumbersValid}
+        ref={inputsRef}
       />
       <CardExpirationDate
         expirationDate={expirationDate}
         onChange={onChangeExpirationDate}
         isValid={isExpirationDateValid}
+        ref={inputsRef}
       />
       <CardUserName
         userName={userName}
         onChange={onChangeUserName}
         onBlur={onBlurUserName}
         isValid={isUserNameValid}
+        ref={inputsRef}
       />
       <CardSecurityCode
         securityCode={securityCode}
         onChange={onChangeSecurityCode}
         isValid={isSecurityCodeValid}
+        ref={inputsRef}
       />
-      <CardPassword password={password} onChange={onChangePassword} isValid={isPasswordValid} />
+      <CardPassword
+        password={password}
+        onChange={onChangePassword}
+        isValid={isPasswordValid}
+        ref={inputsRef}
+      />
       {isNextButtonShown && <button className="submit-button">다음</button>}
-    </AutoFocusForm>
+    </form>
   );
 }

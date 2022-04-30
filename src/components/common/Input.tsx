@@ -56,33 +56,3 @@ export default function Input({ size, maxLength, onChange, classes, align, ...pr
     />
   );
 }
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const inputLength = e.target.value.length;
-
-      if (inputLength > maxLength) return;
-      onChange?.(e);
-      if (inputLength === maxLength) {
-        focusOnNextInput(e.target);
-      }
-    };
-
-    const focusOnNextInput = (target: HTMLInputElement) => {
-      const inputIndex = arrayInputsRef.current.findIndex(element => element === target);
-
-      arrayInputsRef.current[inputIndex + 1].focus();
-    };
-
-    return (
-      <input
-        className={`input-basic ${classes} ${sizeTag[size]} ${alignTag[align]}`}
-        onChange={handleChange}
-        {...props}
-      />
-    );
-  }
-);
-
-Input.displayName = "Input";
-
-export default Input;
